@@ -1,0 +1,10 @@
+--[[Auto-generated from Toaster]]
+model =
+{
+    "Shotgun_Epic",
+    "Shotgun_Epic_rubble",
+}
+simvis_attributes =
+{
+    object_scar = 0
+}
