@@ -328,14 +328,23 @@ function Skirmish_SorcererSubjugateLeash(caster, target)
 	local leashOwner = Squad_GetPlayerOwner(caster)
 	local originalOwner = Squad_GetPlayerOwner(target)
 
+	targetID = Squad_GetGameID(target)
+
 	local function EndSubbing()
-		Squad_SetPlayerOwner(target, originalOwner)
-		Rule_RemoveMe()
+		if Squad_IsValid(targetID) == true then
+			Squad_SetPlayerOwner(target, originalOwner)
+			Rule_RemoveMe()
+		end
 	end
 
 	local function retreatCheck()
-		if Squad_IsRetreating(caster) or (Squad_HasUpgrade(target, Util_GetUpgradeID("upgrade\\pvp\\race_chaos\\troops\\csm_sorceror_subjugate_active")) == false) then
-			Squad_SetPlayerOwner(target, originalOwner)
+		if Squad_IsValid(targetID) == true then
+			if Squad_IsRetreating(caster) or (Squad_HasUpgrade(target, Util_GetUpgradeID("upgrade\\pvp\\race_chaos\\troops\\csm_sorceror_subjugate_active")) == false) then
+				Squad_SetPlayerOwner(target, originalOwner)
+				Rule_Remove(EndSubbing)
+				Rule_RemoveMe()
+			end
+		else
 			Rule_Remove(EndSubbing)
 			Rule_RemoveMe()
 		end
