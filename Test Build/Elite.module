@@ -1,9 +1,9 @@
 [global]
-Name = Elite
-UIName = Elite
+Name = elite
+UIName = elite
 Description = Dawn of War II: Elite
-ModVersion = 2.9.9.2
-ModFolder = Elite
+ModVersion = 2.9.10
+ModFolder = elite
 UCSBaseIndex = 10000000
 
 [attrib:common]
