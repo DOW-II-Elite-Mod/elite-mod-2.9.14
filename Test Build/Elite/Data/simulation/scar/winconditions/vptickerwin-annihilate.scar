@@ -1,0 +1,9 @@
+import("WinCondition.scar")
+
+function VPTickerWin_OnInit()
+	WinCondition_StartupAnnihilate()
+	WinCondition_StartupVictoryPoints()
+	Camera_SetGameplayCameraTuningValue( CGTT_MaximumDistance, 60 )
+	Camera_SetGameplayCameraTuningValue( CGTT_FieldOfView, 60 )
+end
+Scar_AddInit( VPTickerWin_OnInit )

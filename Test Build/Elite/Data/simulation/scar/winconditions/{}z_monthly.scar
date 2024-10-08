@@ -1,0 +1,32 @@
+import("WinCondition.scar")
+import("ScarUtil.scar")
+
+abil_pvp_gm_nightfight = World_GetPropertyBagGroupID("ability/pvp/game_mode_packs/game_night_fighting")
+
+function WinCondition_OnInit()
+	WinCondition_StartupAnnihilate()
+	WinCondition_StartupVictoryPoints()
+	Camera_SetGameplayCameraTuningValue( CGTT_MaximumDistance, 60 )
+	Camera_SetGameplayCameraTuningValue( CGTT_FieldOfView, 60 )
+	Monthly_CustomRule()
+
+end
+Scar_AddInit( WinCondition_OnInit )
+
+
+
+--~ Custom VPC rules that reduces unit sight significantly
+
+function Monthly_CustomRule()
+
+	Skirmish_Start()
+
+	for i = 1, World_GetPlayerCount() do
+		local player = World_GetPlayerAt( i )
+
+		Cmd_PlayerAbility(player, abil_pvp_gm_nightfight, true)
+
+	end
+
+end
+

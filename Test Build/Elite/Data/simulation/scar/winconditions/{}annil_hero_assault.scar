@@ -1,0 +1,82 @@
+import("WinCondition.scar")
+import("ScarUtil.scar")
+
+abil_pvp_gm_kth = World_GetPropertyBagGroupID("ability/pvp/game_mode_packs/game_kill_team_heroes")
+
+function WinCondition_OnInit()
+	WinCondition_StartupAnnihilate()
+	WinCondition_RemoveAllVictoryPoints()
+	Camera_SetGameplayCameraTuningValue( CGTT_MaximumDistance, 60 )
+	Camera_SetGameplayCameraTuningValue( CGTT_FieldOfView, 60 )
+	Hero_Assault_Init()
+
+end
+Scar_AddInit( WinCondition_OnInit )
+
+
+
+--~ Hero Assault rules: Gives an upgrade that gives you all 3 heroes and then slices your max pop cap to 45.
+
+function Hero_Assault_Init()
+
+	Skirmish_Start()
+
+	for i = 1, World_GetPlayerCount() do
+		local player = World_GetPlayerAt( i )
+		Player_SetMaxCapPopulation(player, CT_Personnel, 45)
+		Player_SetMaxPopulation( player, CT_Personnel, 45) 
+		--~ Cmd_InstantPlayerUpgrade(World_GetPlayerAt(i), Util_GetUpgradeID("upgrade/pvp/game_mode_packs/kill_team_heroes")) NOT ONLINE COMPATIBLE
+		Cmd_PlayerAbility(player, abil_pvp_gm_kth, true)
+
+		local cgroup_index = 1
+
+		function UI_Assign_squads( sgroup, sIndex, squad )
+			sbp_bpid = Squad_GetBlueprintName( squad )
+			local sbp_name = string.lower( sbp_bpid )
+
+
+			if string.find( sbp_name, '\\heroes\\' ) ~= nil then
+				if cgroup_index > 3 then
+					cgroup_index = 1
+				end
+				Misc_SetSquadControlGroup(squad, sIndex )
+				cgroup_index = cgroup_index + 1
+				print("Hero Assault: Assigning hero "..sbp_name.."to control group "..cgroup_index)
+				return false  -- Never stop searching... go through all squads.
+			end
+
+			return false
+		end
+
+		function testSquad( sgroup, sIndex, squad )
+			sbp_bpid = Squad_GetBlueprintName( squad )
+			local sbp_name = string.lower( sbp_bpid )
+
+			if  (Squad_IsAnyConscious(squad) or Squad_IsAnyConsciousIncDespawned(squad)) then
+
+				--~ if we arent a hero unit, die so only the heroes remain
+				if string.find( sbp_name, '\\heroes\\' ) == nil then
+					print("Destroying: ")
+                                                                                                    print(sbp_name)
+					--~ UI_RemoveSquadTab(squad)  
+					Elite.ui.on_squad_killed(squad, nil) --~ trigger the weird event
+					Squad_Destroy(squad) --~ DO NOT use SGroup_Destroy as this will kill everything else you own
+				end
+				return false  -- Never stop searching... go through all squads.
+			end
+			return false
+		end
+		SGroup_ForEach( Player_GetSquads(player), testSquad )
+
+
+		Rule_AddOneShot(function () SGroup_ForEach( Player_GetSquads(player), testSquad ) end, 1.5) --~ the sole reason we repeat this is because Ordo Malleus heroes create their starting squad a bit later
+
+		Rule_AddOneShot(function () SGroup_ForEach( Player_GetSquads(player), UI_Assign_squads) end, 2) --~ stop control group weirdness
+
+		Rule_AddOneShot(function () SGroup_ForEach( Player_GetSquads(player), testSquad ) end, 2.5) --~ the sole reason we repeat this is because Ordo Malleus heroes create their starting squad a bit later
+		Rule_AddOneShot(function () SGroup_ForEach( Player_GetSquads(player), testSquad ) end, 4.0) --~ the sole reason we repeat this is because Ordo Malleus heroes create their starting squad a bit later
+	end
+
+
+end
+

@@ -1,0 +1,9 @@
+import("WinCondition.scar")
+
+function FFATeam_OnInit()
+	WinCondition_StartupAnnihilate()
+	WinCondition_StartupFFA()
+	Camera_SetGameplayCameraTuningValue( CGTT_MaximumDistance, 60 )
+	Camera_SetGameplayCameraTuningValue( CGTT_FieldOfView, 60 )
+end
+Scar_AddInit( FFATeam_OnInit )
