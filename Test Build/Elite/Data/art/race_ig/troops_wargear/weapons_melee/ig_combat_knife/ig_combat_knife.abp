@@ -1,0 +1,10 @@
+--[[Auto-generated from Toaster]]
+model =
+{
+    "IG_Combat_Knife",
+    "IG_Combat_Knife_rubble",
+}
+simvis_attributes =
+{
+    object_scar = 0
+}
